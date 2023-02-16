@@ -1,15 +1,27 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Card from './shared/Card'
 import Button from './shared/Button';
 import RatingSelect from './RatingSelect';
-function FeedbackForm({ handleAdd }) {
+import { useContext } from 'react';
+import FeedbackContext from '../context/FeedbackContext';
+function FeedbackForm() {
     const [text, setText] = useState('');
     const [btnDisabled, setBtnDisabled] = useState(true);
     const [message, setMessage] = useState('')
     const [rating, setRating] = useState(10);
 
+    const { addFeedback, feedbackEdit, updateFeedback } = useContext(FeedbackContext)
 
+    // when something changes inside editfeedcback, useEffect comes into play
+    useEffect(() => {
+        if (feedbackEdit.edit === true) {
+            setBtnDisabled(false)
+            setText(feedbackEdit.item.text)
+            setRating(feedbackEdit.item.rating)
+        }
+
+    }, [feedbackEdit])
 
     const handleTextChange = (e) => {
         if (text === '') {
@@ -29,12 +41,19 @@ function FeedbackForm({ handleAdd }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (text.trim().length > 10) {
+        if (feedbackEdit.edit === true) {
             const newFeedback = {
                 text,
                 rating
             }
-            handleAdd(newFeedback)
+            updateFeedback(feedbackEdit.item.id, newFeedback)
+            feedbackEdit.edit = false
+        } else if (text.trim().length > 10) {
+            const newFeedback = {
+                text,
+                rating
+            }
+            addFeedback(newFeedback)
         }
         setText('')
     }

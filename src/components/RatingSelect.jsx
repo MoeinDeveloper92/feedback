@@ -1,12 +1,25 @@
-import React from 'react'
+import Reactو, { useContext, useEffect } from 'react'
+import FeedbackContext from '../context/FeedbackContext'
 import { useState } from 'react'
+
+
 function RatingSelect({ select }) {
     const [selected, setSelected] = useState(2)
+    const { feedbackEdit } = useContext(FeedbackContext)
+
+
     const handleChange = (e) => {
         setSelected(+e.target.value)
         select(+e.target.value)
     }
-  
+
+    // whenevr feedback edit changes ,then run this sideEffect
+    useEffect(() => {
+        if (feedbackEdit.edit === true) {
+            setSelected(feedbackEdit.item.rating)
+        }
+    }, [feedbackEdit])
+
     return (
         <ul className='rating'>
             <li>
